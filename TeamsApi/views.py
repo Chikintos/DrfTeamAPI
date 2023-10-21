@@ -8,7 +8,6 @@ from rest_framework.response import Response
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-
     @action(methods=['get'], detail=True)
     def getplayers(self, request, pk=None):
         # Get the team object associated with the request
@@ -23,6 +22,15 @@ class TeamViewSet(viewsets.ModelViewSet):
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+    def update(self, request, pk=None):
+        player=self.get_object()
+        for key,value in request.data.items():
+            if hasattr(player,key):
+                setattr(player, key, value)
+        player.save()
+        return Response({"info":request.data,'player':str(player)})
+    
 
     @action(methods=['post'], detail=True)
     def changeteam(self, request, pk=None):
