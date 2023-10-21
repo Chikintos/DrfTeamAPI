@@ -27,6 +27,9 @@ class PlayerViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True)
     def changeteam(self, request, pk=None):
         # Get the player object associated with the request
+        if not pk:
+            return Response({'error': 'Team id not found'}, status=500)
+            
         player = self.get_object()
         team = request.data.get('pk')
         try:
@@ -34,6 +37,6 @@ class PlayerViewSet(viewsets.ModelViewSet):
             
             player.team = team # Change the team of the player and save
             player.save()
-            return Response({'user': player.id, 'team': team.id})
+            return Response({'player_info': str(player), 'team_id': team.id})
         except Team.DoesNotExist:
             return Response({'error': 'Team not found'}, status=400)
